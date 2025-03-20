@@ -3,13 +3,14 @@ const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("resultSize").value = 1; 
-  fetchData(); 
+  fetchData();
 });
 
+
 async function fetchData() {
-  let resultSize = document.getElementById("resultSize").value;
+  const resultSize = document.getElementById("resultSize").value;
   
-  clearTable();
+  clearContainer();
 
   const pokemonList = [];
 
@@ -21,66 +22,94 @@ async function fetchData() {
       pokemonList.push(data);
     }
 
-    displayResults(pokemonList);
+    displayPokemonCards(pokemonList);
 
   } catch (error) {
-    console.error(`Ошибка при получении данных: ${error.message}`);
-    window.alert(`Ошибка при получении данных: ${error.message}`);
+    console.error(`Fehler beim Laden der Pokémon: ${error.message}`);
+    alert(`Fehler beim Laden der Pokémon: ${error.message}`);
   }
 }
 
-function clearTable() {
-  const table = document.getElementById("usersTable");
-  table.innerHTML = "";
-}
+async function searchPokemon() {
+  const searchValue = document.getElementById("searchInput").value.toLowerCase().trim();
 
-function displayResults(results) {
-  if (!Array.isArray(results) || results.length === 0) {
-    const para = document.createElement("p");
-    para.innerHTML = "Keine Pokémon gefunden.";
-    document.getElementById("usersTable").appendChild(para);
+  if (!searchValue) {
+    alert("Bitte gib einen Pokémon-Namen oder eine ID ein!");
     return;
   }
 
-  const headerRow = document.createElement("tr");
-  const headers = ["Bild", "Name", "Größe", "Gewicht", "Typ(en)"];
-  
-  headers.forEach((headerText) => {
-    const th = document.createElement("th");
-    th.innerText = headerText;
-    headerRow.appendChild(th);
-  });
+  clearContainer();
 
-  document.getElementById("usersTable").appendChild(headerRow);
+  try {
+    const response = await fetch(`${baseUrl}${searchValue}`);
 
-  for (const pokemon of results) {
-    const rowTable = document.createElement("tr");
+    if (!response.ok) {
+      alert(`Pokémon "${searchValue}" wurde nicht gefunden!`);
+      return;
+    }
 
-    const imgCell = document.createElement("td");
-    const img = document.createElement("img");
-    img.src = pokemon.sprites.front_default;
-    img.alt = pokemon.name;
-    img.width = 50;
-    imgCell.appendChild(img);
-    rowTable.appendChild(imgCell);
+    const data = await response.json();
+    displayPokemonCards([data]);
 
-    const nameCell = document.createElement("td");
-    nameCell.innerHTML = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
-    rowTable.appendChild(nameCell);
-
-    const heightCell = document.createElement("td");
-    heightCell.innerHTML = `${pokemon.height / 10} m`;
-    rowTable.appendChild(heightCell);
-
-    const weightCell = document.createElement("td");
-    weightCell.innerHTML = `${pokemon.weight / 10} kg`;
-    rowTable.appendChild(weightCell);
-
-    const typesCell = document.createElement("td");
-    const types = pokemon.types.map(t => t.type.name).join(", ");
-    typesCell.innerHTML = types;
-    rowTable.appendChild(typesCell);
-
-    document.getElementById("usersTable").appendChild(rowTable);
+  } catch (error) {
+    console.error(`Fehler bei der Suche: ${error.message}`);
+    alert(`Fehler bei der Suche: ${error.message}`);
   }
+}
+
+function clearContainer() {
+  const container = document.getElementById("pokemonContainer");
+  container.innerHTML = "";
+}
+
+function displayPokemonCards(pokemons) {
+  const container = document.getElementById("pokemonContainer");
+
+  if (!Array.isArray(pokemons) || pokemons.length === 0) {
+    container.innerHTML = "<p>Keine Pokémon gefunden.</p>";
+    return;
+  }
+
+  pokemons.forEach(pokemon => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    const img = document.createElement("img");
+    img.src = pokemon.sprites.front_default || "";
+    img.alt = pokemon.name;
+
+    const name = document.createElement("h3");
+    name.textContent = capitalize(pokemon.name);
+
+    const id = document.createElement("p");
+    id.textContent = `ID: ${pokemon.id}`;
+
+    const height = document.createElement("p");
+    height.textContent = `Größe: ${pokemon.height / 10} m`;
+
+    const weight = document.createElement("p");
+    weight.textContent = `Gewicht: ${pokemon.weight / 10} kg`;
+
+    const types = pokemon.types.map(t => capitalize(t.type.name)).join(", ");
+    const typesText = document.createElement("p");
+    typesText.textContent = `Typ(en): ${types}`;
+
+    const abilities = pokemon.abilities.map(a => capitalize(a.ability.name)).join(", ");
+    const abilitiesText = document.createElement("p");
+    abilitiesText.textContent = `Fähigkeiten: ${abilities}`;
+
+    card.appendChild(img);
+    card.appendChild(name);
+    card.appendChild(id);
+    card.appendChild(height);
+    card.appendChild(weight);
+    card.appendChild(typesText);
+    card.appendChild(abilitiesText);
+
+    container.appendChild(card);
+  });
+}
+
+function capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }

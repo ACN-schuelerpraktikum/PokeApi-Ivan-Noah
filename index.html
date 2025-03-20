@@ -10,13 +10,25 @@
 
   <h1>Pokémon Generator </h1>
 
-  <div class="input-container">
-    <label for="resultSize">Wie viele Pokémon möchtest du sehen?</label>
-    <input type="number" id="resultSize" min="1" max="20" value="5">
-    <button onclick="fetchData()">Pokémon generieren</button>
+  <div class="welcome-container">
+    <h2>Willkommen auf der Pokémon-Seite!</h2>
+    <p>Hier kannst du zufällige Pokémon generieren oder gezielt nach einem bestimmten Pokémon suchen.<br>
+       Die Daten stammen von der <a href="https://pokeapi.co/" target="_blank">PokeAPI</a>.</p>
+  </div>
+ 
+  <div class="search-container">
+    <label for="searchInput">Suche nach einem Pokémon (Name oder ID):</label><br>
+    <input type="text" id="searchInput" placeholder="z.B. pikachu oder 25">
+    <button onclick="searchPokemon()">Suchen</button>
   </div>
 
-  <table id="usersTable"></table>
+  <div class="input-container">
+    <label for="resultSize">Wie viele Pokémon möchtest du sehen?</label>
+    <input type="number" id="resultSize" min="1" max="10" value="1">
+    <button onclick="fetchData()">Zufällige Pokémon generieren</button>
+  </div>
+
+  <div id="pokemonContainer" class="pokemon-container"></div>
 
   <script src="app.js"></script>
 </body>

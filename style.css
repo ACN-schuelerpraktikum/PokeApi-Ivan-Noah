@@ -11,13 +11,24 @@ h1 {
   margin-top: 30px;
 }
 
-.input-container {
+.welcome-container {
+  margin: 20px auto;
+  width: 80%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.input-container,
+.search-container {
   margin: 20px auto;
 }
 
-input[type="number"] {
+input[type="number"],
+#searchInput {
   padding: 10px;
-  width: 80px;
+  width: 200px;
   font-size: 16px;
   border-radius: 20px;
   border: 1px solid #ccc;
@@ -46,26 +57,33 @@ button:active {
   transform: scale(0.95);
 }
 
-table {
-  width: 90%;
-  margin: 20px auto;
-  border-collapse: collapse;
+.pokemon-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px;
+}
+
+.card {
   background-color: #fff;
+  width: 250px;
+  border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  border-radius: 10px;
   overflow: hidden;
+  padding: 15px;
+  text-align: center;
 }
 
-th, td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #eee;
+.card img {
+  width: 150px;
+  height: 150px;
 }
 
-th {
-  background-color: #ffcc00;
+.card h3 {
+  margin: 10px 0;
 }
 
-img {
-  width: 80px;
-  height: 80px;
+.card p {
+  margin: 5px 0;
 }
