@@ -1,73 +1,86 @@
-// Basis-URL für die PokeAPI
-const baseUrl = "https://pokeapi.co/api/v2/pokemon";
+const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
 
-const cardContainer = document.getElementById('pokemonCard');
-const searchInput = document.getElementById('searchInput');
 
-// Beim Laden der Seite einen zufälligen Pokémon anzeigen
-window.onload = () => {
-  getRandomPokemon();
-};
-
-// Event-Listener hinzufügen, um die Enter-Taste im Suchfeld zu erkennen
-searchInput.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    searchPokemon();
-  }
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("resultSize").value = 1; 
+  fetchData(); 
 });
 
-// Funktion, um einen zufälligen Pokémon zu laden
-async function getRandomPokemon() {
-  const randomId = Math.floor(Math.random() * 898) + 1; // IDs von 1 bis 898
-  await fetchPokemon(randomId);
+async function fetchData() {
+  let resultSize = document.getElementById("resultSize").value;
+  
+  clearTable();
+
+  const pokemonList = [];
+
+  try {
+    for (let i = 0; i < resultSize; i++) {
+      const randomId = Math.floor(Math.random() * 1025) + 1;
+      const response = await fetch(`${baseUrl}${randomId}`);
+      const data = await response.json();
+      pokemonList.push(data);
+    }
+
+    displayResults(pokemonList);
+
+  } catch (error) {
+    console.error(`Ошибка при получении данных: ${error.message}`);
+    window.alert(`Ошибка при получении данных: ${error.message}`);
+  }
 }
 
-// Funktion, um Pokémon anhand von Name oder ID zu suchen
-async function searchPokemon() {
-  const query = searchInput.value.trim().toLowerCase(); // Eingabewert bereinigen
-  if (!query) {
-    alert("Bitte gib einen Pokémon-Namen oder eine ID ein!");
+function clearTable() {
+  const table = document.getElementById("usersTable");
+  table.innerHTML = "";
+}
+
+function displayResults(results) {
+  if (!Array.isArray(results) || results.length === 0) {
+    const para = document.createElement("p");
+    para.innerHTML = "Keine Pokémon gefunden.";
+    document.getElementById("usersTable").appendChild(para);
     return;
   }
 
-  await fetchPokemon(query);
-}
+  const headerRow = document.createElement("tr");
+  const headers = ["Bild", "Name", "Größe", "Gewicht", "Typ(en)"];
+  
+  headers.forEach((headerText) => {
+    const th = document.createElement("th");
+    th.innerText = headerText;
+    headerRow.appendChild(th);
+  });
 
+  document.getElementById("usersTable").appendChild(headerRow);
 
-async function fetchPokemon(pokemon) {
-  try {
-    const response = await fetch(`${baseUrl}/${pokemon}`);
-    if (!response.ok) {
-      throw new Error("Pokémon wurde nicht gefunden!");
-    }
+  for (const pokemon of results) {
+    const rowTable = document.createElement("tr");
 
-    const data = await response.json();
-    renderPokemonCard(data);
-  } catch (error) {
-    cardContainer.innerHTML = `<p>${error.message}</p>`;
+    const imgCell = document.createElement("td");
+    const img = document.createElement("img");
+    img.src = pokemon.sprites.front_default;
+    img.alt = pokemon.name;
+    img.width = 50;
+    imgCell.appendChild(img);
+    rowTable.appendChild(imgCell);
+
+    const nameCell = document.createElement("td");
+    nameCell.innerHTML = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+    rowTable.appendChild(nameCell);
+
+    const heightCell = document.createElement("td");
+    heightCell.innerHTML = `${pokemon.height / 10} m`;
+    rowTable.appendChild(heightCell);
+
+    const weightCell = document.createElement("td");
+    weightCell.innerHTML = `${pokemon.weight / 10} kg`;
+    rowTable.appendChild(weightCell);
+
+    const typesCell = document.createElement("td");
+    const types = pokemon.types.map(t => t.type.name).join(", ");
+    typesCell.innerHTML = types;
+    rowTable.appendChild(typesCell);
+
+    document.getElementById("usersTable").appendChild(rowTable);
   }
-}
-
-// Funktion, um die Pokémon-Karte im HTML anzuzeigen
-function renderPokemonCard(pokemon) {
-  const abilitiesList = pokemon.abilities
-    .map(ability => `<li>${capitalize(ability.ability.name)}</li>`)
-    .join('');
-
-  cardContainer.innerHTML = `
-    <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
-    <h2>${capitalize(pokemon.name)}</h2>
-    <p><strong>ID:</strong> ${pokemon.id}</p>
-    <p><strong>Größe:</strong> ${pokemon.height / 10} m</p>
-    <p><strong>Gewicht:</strong> ${pokemon.weight / 10} kg</p>
-    <div>
-      <strong>Fähigkeiten:</strong>
-      <ul class="abilities">${abilitiesList}</ul>
-    </div>
-  `;
-}
-
-// Funktion, um den ersten Buchstaben großzuschreiben
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

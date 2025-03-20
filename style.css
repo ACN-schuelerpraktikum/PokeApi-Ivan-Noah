@@ -11,17 +11,13 @@ h1 {
   margin-top: 30px;
 }
 
-p {
-  margin: 10px 0;
-}
-
-.search-container {
+.input-container {
   margin: 20px auto;
 }
 
-input[type="text"] {
+input[type="number"] {
   padding: 10px;
-  width: 250px;
+  width: 80px;
   font-size: 16px;
   border-radius: 20px;
   border: 1px solid #ccc;
@@ -30,7 +26,7 @@ input[type="text"] {
 
 button {
   padding: 10px 20px;
-  margin-top: 10px;
+  margin-left: 10px;
   font-size: 16px;
   border: none;
   border-radius: 20px;
@@ -50,27 +46,26 @@ button:active {
   transform: scale(0.95);
 }
 
-.button-container {
-  margin-bottom: 20px;
-}
-
-.card {
-  background-color: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  display: inline-block;
-  padding: 20px;
+table {
+  width: 90%;
   margin: 20px auto;
-  width: 350px;
-  text-align: center;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.card img {
-  width: 150px;
-  height: 150px;
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
 }
 
-ul.abilities {
-  list-style: none;
-  padding: 0;
+th {
+  background-color: #ffcc00;
+}
+
+img {
+  width: 80px;
+  height: 80px;
 }
