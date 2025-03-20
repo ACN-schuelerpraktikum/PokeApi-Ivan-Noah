@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokemon Generator </title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Pokemon Generator </h1>
+
+  <!-- Willkommenstext -->
+  <p>Willkommen! Hier kannst du dir zufällige Pokemon anzeigen lassen oder gezielt nach einem suchen.</p>
+
+  <!-- Suchfeld -->
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Pokémon-Name oder ID eingeben...">
+    <button onclick="searchPokemon()">Suchen</button>
+  </div>
+
+  <!-- Buttons -->
+  <div class="button-container">
+    <button onclick="getRandomPokemon()">Neuen zufälligen Pokemon generieren</button>
+  </div>
+
+  <!-- Hier erscheint die Pokémon-Karte -->
+  <div id="pokemonCard" class="card"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
