@@ -1,11 +1,9 @@
 const baseUrl = "https://pokeapi.co/api/v2/pokemon/";
 
-
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("resultSize").value = 1; 
   fetchData();
 });
-
 
 async function fetchData() {
   const resultSize = document.getElementById("resultSize").value;
@@ -98,6 +96,11 @@ function displayPokemonCards(pokemons) {
     const abilitiesText = document.createElement("p");
     abilitiesText.textContent = `Fähigkeiten: ${abilities}`;
 
+   
+    const formsButton = document.createElement("button");
+    formsButton.textContent = "Formulare anzeigen";
+    formsButton.addEventListener("click", () => showFormsById(pokemon.id, card));
+
     card.appendChild(img);
     card.appendChild(name);
     card.appendChild(id);
@@ -105,6 +108,7 @@ function displayPokemonCards(pokemons) {
     card.appendChild(weight);
     card.appendChild(typesText);
     card.appendChild(abilitiesText);
+    card.appendChild(formsButton);
 
     container.appendChild(card);
   });
@@ -112,4 +116,70 @@ function displayPokemonCards(pokemons) {
 
 function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+async function showFormsById(id, parentCard) {
+
+  const existingForms = parentCard.querySelector(".forms-container");
+  if (existingForms) {
+    existingForms.remove();
+  }
+
+  const formsContainer = document.createElement("div");
+  formsContainer.classList.add("forms-container");
+
+  const title = document.createElement("h4");
+  title.textContent = "Die Formen dieses Pokémon sind:";
+  formsContainer.appendChild(title);
+
+  
+  let relatedIds = [];
+
+  if (id % 3 === 0) {
+    relatedIds = [id - 1, id - 2];
+  } else if (id % 3 === 1) {
+    relatedIds = [id + 1, id + 2];
+  } else if (id % 3 === 2) {
+    relatedIds = [id - 1, id + 1];
+  }
+
+  
+  relatedIds = relatedIds.filter(newId => newId > 0 && newId <= 1025);
+
+  if (relatedIds.length === 0) {
+    const noForms = document.createElement("p");
+    noForms.textContent = "Keine Formulare verfügbar.";
+    formsContainer.appendChild(noForms);
+    parentCard.appendChild(formsContainer);
+    return;
+  }
+
+  
+  for (let relatedId of relatedIds) {
+    try {
+      const response = await fetch(`${baseUrl}${relatedId}`);
+      if (!response.ok) continue;
+
+      const formData = await response.json();
+
+      const formDiv = document.createElement("div");
+      formDiv.classList.add("form-item");
+
+      const formImg = document.createElement("img");
+      formImg.src = formData.sprites.front_default || "";
+      formImg.alt = formData.name;
+
+      const formName = document.createElement("p");
+      formName.textContent = `ID: ${formData.id} - ${capitalize(formData.name)}`;
+
+      formDiv.appendChild(formImg);
+      formDiv.appendChild(formName);
+      formsContainer.appendChild(formDiv);
+
+    } catch (error) {
+      console.error(`Fehler beim Laden des ID-Formulars ${relatedId}: ${error.message}`);
+    }
+  }
+
+  parentCard.appendChild(formsContainer);
 }
